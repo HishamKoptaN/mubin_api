@@ -14,10 +14,10 @@ return new class extends Migration
             $table->foreignId('plan_id')->constrained('plans');
             $table->foreignId('from')->constrained('currencies');
             $table->foreignId('to')->constrained('currencies');
-            $table->decimal('selling', 8, 1)->unsigned();
-            $table->decimal('buying', 8, 1)->unsigned();
+            $table->double('price', 8, 1);
             $table->timestamps();
-        });
+        },
+     );
     }
     public function down()
     {

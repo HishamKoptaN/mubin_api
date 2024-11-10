@@ -40,7 +40,7 @@ class DashboardController extends Controller
                ], 401);
            }
            $plan = Plan::where('id', $user->plan_id)->first();     
-           $userData = $user->only(['id', 'name', 'image', 'balance', 'plan_id']);
+           $userData = $user->only(['id', 'name', 'image', 'balance', 'plan_id', 'account_number']);
            $transfers = Transfer::with(['receiverCurrency:id,name'])->where('user_id', $user->id)->latest()->limit(2)->get();
            $transfers->each(function ($transfer) {
                    $transfer->receiverCurrency->makeHidden(['id']);
@@ -48,19 +48,19 @@ class DashboardController extends Controller
            $exchange_rates = Currency::where('id', '!=', 2)->get();
            $commission = $plan->transfer_commission; 
            $selling_rates = Rate::where([['plan_id', $user->plan_id],['to',2]])->get()
-               ->map(function ($selling_rate) {
+               ->map(function ($selling_price) {
                    return [
-                       'selling' => $selling_rate->selling,
-                       'updated_at' => $selling_rate->updated_at,
-                       'from' => $selling_rate->fromCurrency->id,
+                       'price' => $selling_price->price,
+                       'updated_at' => $selling_price->updated_at,
+                       'from' => $selling_price->fromCurrency->id,
                    ];
                });
            $buying_rates = Rate::where([['plan_id', $user->plan_id], ['from', 2]])->get()
-              ->map(function ($buying_rate) {
+              ->map(function ($buying_price) {
                   return [
-                      'selling' => $buying_rate->selling,
-                      'updated_at' => $buying_rate->updated_at,
-                      'to' => $buying_rate->toCurrency->id,
+                      'price' => $buying_price->price,
+                      'updated_at' => $buying_price->updated_at,
+                      'to' => $buying_price->toCurrency->id,
                   ];
            });
            $currencies = Currency::all();
@@ -70,8 +70,8 @@ class DashboardController extends Controller
                'user' => $userData,
                'transfers' => $transfers,
                'exchange_rates' => $exchange_rates,
-               'selling_rates' => $selling_rates,
-               'buying_rates' => $buying_rates,
+               'selling_prices' => $selling_rates,
+               'buying_prices' => $buying_rates,
                'currencies' => $currencies,
                'rates' => $rates,
                'plan' => $plan, 

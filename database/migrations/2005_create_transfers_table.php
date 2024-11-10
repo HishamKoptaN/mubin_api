@@ -15,9 +15,9 @@ return new class extends Migration
             $table->unsignedDouble('amount');
             $table->unsignedDouble('net_amount');
             $table->unsignedDouble('rate');
-            $table->text("message")->nullable();
-            $table->string("image")->nullable();
-            $table->string("address")->nullable();
+            $table->text("message")->default('null');
+            $table->string("image")->default('null');
+            $table->string("address")->default('null');
             $table->foreignId('employee_id')
                 ->nullable()
                 ->constrained('users')

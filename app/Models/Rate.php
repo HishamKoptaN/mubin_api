@@ -14,8 +14,8 @@ class Rate extends Model
         'plan_id',
         'from',
         'to',
-        'selling',
-        'buying', 'created_at',
+        'price',
+        'created_at',
         'updated_at',
     ];
 

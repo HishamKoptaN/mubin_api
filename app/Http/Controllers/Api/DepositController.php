@@ -41,17 +41,17 @@ class DepositController extends Controller
         }
         $user = Auth::guard('sanctum')->user();
         $deposits = Deposit::with('currency:id,name')
-            ->where('user_id', $user->id)->get(); 
+            ->where('user_id', $user->id)->get();
         $deposits->each(function ($deposit) {
-                    $deposit->currency->makeHidden(['id']);
-            });
+            $deposit->currency->makeHidden(['id']);
+        });
         return response()->json([
             'status' => true,
             'deposits' => $deposits,
         ]);
     }
     public function geEmployeeAccounts(Request $request)
-    {   
+    {
         $user = Auth::guard('sanctum')->user();
         $employee = DB::table('user_has_roles')
             ->join('users', 'user_has_roles.user_id', '=', 'users.id')
@@ -63,7 +63,7 @@ class DepositController extends Controller
             ['to', 1]
         ])->get()->map(function ($rate) {
             return [
-                'selling' => $rate->selling,
+                'price' => $rate->price,
                 'updated_at' => $rate->updated_at,
                 'currency_name' => $rate->fromCurrency->name,
                 'from' => $rate->fromCurrency->id,
@@ -72,7 +72,7 @@ class DepositController extends Controller
         if ($employee) {
             if ($employee->online_offline === 'online') {
                 $accounts = Account::where('user_id', $employee->id)
-                    ->with('currency:id,name') 
+                    ->with('currency:id,name')
                     ->get();
                 $accounts->each(function ($account) {
                     $account->currency->makeHidden(['id']);
@@ -81,8 +81,8 @@ class DepositController extends Controller
                     'status' => true,
                     'user_plan' => $user->plan_id,
                     'employee_id' => $employee->id,
-                    'account_info' => $accounts, 
-                    'to_binance_rates' => $to_binance_rates, 
+                    'account_info' => $accounts,
+                    'to_binance_rates' => $to_binance_rates,
                 ]);
             } else {
                 return response()->json([
@@ -99,54 +99,54 @@ class DepositController extends Controller
     }
     public function depositMoney(Request $request)
     {
-    try {
-        $user = Auth::guard('sanctum')->user();
-        $image = $request->file('image');
-        if ($image instanceof \Illuminate\Http\UploadedFile) {
-            $name = time() . '_' . $image->getClientOriginalName();
-            $destinationPath = public_path('images/users_tasks/');
-            if (!File::exists($destinationPath)) {
-                File::makeDirectory($destinationPath, 0755, true);
-            }
-            $image->move($destinationPath, $name);
-            if (!Auth::guard('sanctum')->check()) {
+        try {
+            $user = Auth::guard('sanctum')->user();
+            $image = $request->file('image');
+            if ($image instanceof \Illuminate\Http\UploadedFile) {
+                $name = time() . '_' . $image->getClientOriginalName();
+                $destinationPath = public_path('images/users_tasks/');
+                if (!File::exists($destinationPath)) {
+                    File::makeDirectory($destinationPath, 0755, true);
+                }
+                $image->move($destinationPath, $name);
+                if (!Auth::guard('sanctum')->check()) {
+                    return response()->json([
+                        'status' => false,
+                        'error' => __('User not authenticated')
+                    ], 401);
+                }
+                if (!$user) {
+                    return response()->json([
+                        'status' => false,
+                        'error' => __('User not authenticated')
+                    ], 401);
+                }
+                Deposit::create([
+                    'user_id' => $user->id,
+                    'amount' => $request->amount,
+                    'image' => "https://aquan.aquan.website/api/show/image/users_tasks/$name",
+                    'method' => $request->method,
+                    'employee_id' => $request->employee_id,
+                ]);
+                return response()->json([
+                    'status' => true,
+                ], 200);
+            } else {
                 return response()->json([
                     'status' => false,
-                    'error' => __('User not authenticated')
-                ], 401);
+                    'error' => __('No image uploaded or invalid image')
+                ], 400);
             }
-            if (!$user) {
-                return response()->json([
-                    'status' => false,
-                    'error' => __('User not authenticated')
-                ], 401);
-            }
-            Deposit::create([
-                'user_id' => $user->id,
-                'amount' => $request->amount,
-                'image' => "https://aquan.aquan.website/api/show/image/users_tasks/$name",
-                'method' => $request->method,
-                'employee_id' => $request->employee_id,
-            ]);
-            return response()->json([
-                'status' => true,
-            ], 200);
-        } else {
+        } catch (\Illuminate\Validation\ValidationException $e) {
             return response()->json([
                 'status' => false,
-                'error' => __('No image uploaded or invalid image')
-            ], 400);
+                'error' => $e->errors(),
+            ], 422);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'error' => __('An unexpected error occurred: ') . $e->getMessage(),
+            ], 500);
         }
-    } catch (\Illuminate\Validation\ValidationException $e) {
-        return response()->json([
-            'status' => false,
-            'error' => $e->errors(),
-        ], 422);
-    } catch (\Exception $e) {
-        return response()->json([
-            'status' => false,
-            'error' => __('An unexpected error occurred: ') . $e->getMessage(),
-        ], 500);
     }
-  }
 }

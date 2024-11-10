@@ -61,7 +61,8 @@ class AccountsController extends Controller
 public function updateAccountNumbers(Request $request)
 {
     try {
-        $user = Auth::guard('sanctum')->user();
+        $user = Auth::guard('sanctum')->user(); 
+        $userId = $user->id;
         $accountsData = $request->input('accounts');
         if (!$accountsData || !is_array($accountsData)) {
             return response()->json([
@@ -82,8 +83,15 @@ public function updateAccountNumbers(Request $request)
                 ], 404);
             }
         }
+        $accounts = Account::where('user_id', $userId)
+            ->with(['currency:id,name'])->get()
+             ->map(function ($account) {
+             $account->currency->makeHidden('id'); 
+             return $account;
+        });  
         return response()->json([
             'status' => true,
+            'accounts' => $accounts,
         ]);
     } catch (\Exception $e) {
         return response()->json([

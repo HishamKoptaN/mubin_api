@@ -18,7 +18,6 @@ class MessagesDashboardController extends Controller
                 return $this->getMessages($request,$id);
             case 'POST':
                 return $this->sendMessage($request,$id);
-           
             default:
                 return response()->json(['status' => false, 'message' => 'Invalid request method']);
         }
@@ -26,32 +25,20 @@ class MessagesDashboardController extends Controller
     
     protected function getMessages(Request $request,$id)
     {
+        $chat = Chat::where('id', $id)->first();
         if (!$id) {
            return response()->json([
                'status' => false,
                'error' => 'chat_id is required'
            ], 400);
         }
-        $messages = Message::where('chat_id', $id)
-           ->orderBy('created_at', 'asc')
-           ->get();
-    //     if ($messages->isEmpty()) {
-    //     // إنشاء محادثة جديدة
-    //     $newMessage = Chat::create([
-    //         'admin_id' => $user->id,
-    //     ]);
-    //     $newChat->messages()->create([
-    //         'message' => 'Welcome to the chat!',
-    //         'user_id' => $user->id,
-    //     ]);
-        
-    //     // إعادة المحادثة الجديدة مع الرسالة الترحيبية
-    //     $chats = Chat::with(['user:id,name,image'])
-    //                 ->where('admin_id', $user->id)
-    //                 ->orderBy('created_at', 'asc')
-    //                 ->get();
-    //   }   
-     
+        $messages = Message::where('chat_id', $id)->orderBy('created_at', 'desc') ->get();
+        foreach ($messages as $message) {
+                if (is_null($message->readed_at) && $message->user_id === $chat->user_id) {
+                    $message->readed_at = now();
+                    $message->save();
+                }
+            }   
        return response()->json([
            'status' => true,
            'messages' => $messages
@@ -68,17 +55,45 @@ class MessagesDashboardController extends Controller
             ], 401);
         }
         $chat = Chat::where('id', $id)->first();
-         if (!$chat) {
-            $chat = Chat::create([
-                'admin_id' => User::where('id', 3)->first()->id ?? null,
-                'user_id' => $user->id
+       if ($request->hasFile('message')) {
+            $file = $request->file('message');
+            if ($file->isValid()) {
+                $name = strtolower(Str::random(10)) . '-' . str_replace([' ', '_'], '-', $file->getClientOriginalName());
+                $destinationPath = public_path('images/chat_files/');
+                if (!File::exists($destinationPath)) {
+                    File::makeDirectory($destinationPath, 0755, true);
+                }
+                $file->move($destinationPath, $name);
+                Message::create([
+                    'message' =>  "https://aquan.aquan.website/api/show/image/chat_files/$name",
+                    'user_id' => $user->id,
+                    'chat_id' => $chat->id,
+                    'is_file' => 'yes',
+                    'file_name' => $name,
+                    'file_original_name' => $file->getClientOriginalName(),
+                    'file_type' => $file->getClientOriginalExtension(),
+                    
+                ]);
+            } else {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Uploaded file is not valid',
+                ], 400);
+            }
+        } else {
+            $messageText = $request->input('message');
+            if (empty($messageText)) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Message text is required',
+                ], 400);
+            }
+            Message::create([
+                'message' => $messageText,
+                'user_id' => $user->id,
+                'chat_id' => $chat->id,
             ]);
         }
-        $message = Message::firstOrCreate([
-            'message' => $request->message,
-            'user_id' => $user->id,
-            'chat_id' => $id,
-        ]);
         $chat->load('messages');
         return response()->json([
             'status' => true,

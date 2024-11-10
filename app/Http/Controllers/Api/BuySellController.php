@@ -9,6 +9,7 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
+use Carbon\Carbon;
 use App\Models\Account;
 use App\Models\Currency;
 use App\Models\Transfer;
@@ -28,10 +29,8 @@ class BuySellController extends Controller
             }
             case 'POST':
                 return $this->store($request);   
-            case 'PUT':
-                return $this->store($request);
             default:
-                return response()->json(['status' => false, 'message' => 'Invalid request method']);
+                return response()->json(['status' => false, 'error' => 'Invalid request method']);
         }
     }
     public function getBuySell(Request $request)
@@ -47,18 +46,30 @@ class BuySellController extends Controller
             $dashController = DashController::findOrFail(1); 
             $buy_sell_status = (bool) $dashController->status; 
             $buy_sell_message = $dashController->message;
+            $total_monthly_transfers = Transfer::where('user_id', $user->id)->whereMonth('created_at', Carbon::now()->month)->sum('amount');
+            $total_daily_transfers = Transfer::where('user_id',  $user->id)->whereDate('created_at', Carbon::today())->sum('amount');
             $user_plan_id = $user->plan_id;
+            $max_transfer_count = Plan::where('id', $user_plan_id)->value('max_transfer_count');
+            $monthly_transfer_count = Plan::where('id', $user_plan_id)->value('monthly_transfer_count');
+            $daily_transfer_count = Plan::where('id', $user_plan_id)->value('daily_transfer_count');
             $currencies = Currency::select('id', 'name','name_code', 'comment')->get();
             $accounts = Account::with('currency:id,name')->where('user_id', $user->id)->get(); 
             $rates = Rate::where('plan_id', $user_plan_id)->get();
+            
             return response()->json([
                 'status' => true,
                 'buy_sell_status' => $buy_sell_status,
                 'buy_sell_message' => $buy_sell_message,
+                'total_monthly_transfers' => $total_monthly_transfers,  
+                'total_daily_transfers' => $total_daily_transfers,
                 'user_plan_id' => $user_plan_id,
+                'max_transfer_count' => $max_transfer_count,
+                'monthly_transfer_count' => $monthly_transfer_count,
+                'daily_transfer_count' => $daily_transfer_count,
                 'currencies' => $currencies,                
                 'rates' => $rates,
                 'accounts' => $accounts,
+              
             ]);
         } catch (\Exception $e) {
             return response()->json([

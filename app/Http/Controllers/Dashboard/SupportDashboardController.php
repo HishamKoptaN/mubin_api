@@ -24,31 +24,28 @@ class SupportDashboardController extends Controller
                 return response()->json(['status' => false, 'message' => 'Invalid request method']);
         }
     }
-protected function getChats(Request $request)
-{
-    $chats = Chat::with(['user:id,name,image'])
-        ->withCount(['messages as unread_messages_count' => function ($query) {
-            $query->whereNull('readed_at')
-                  ->whereColumn('messages.user_id', '!=', 'chats.user_id'); // التأكد من أن user_id للرسالة لا يساوي user_id للمحادثة
-        }])
-        ->orderBy('created_at', 'asc')
-        ->get();
-
-    $chats->each(function ($chat) {
-        $chat->user->makeHidden(['id']);
-    });
-
-    if ($chats->isEmpty()) {
+    protected function getChats(Request $request)
+    {
+        $chats = Chat::with(['user:id,name,image'])
+            ->withCount(['messages as unread_messages_count' => function ($query) {
+                $query->whereNull('readed_at') 
+                      ->whereColumn('messages.user_id', '=', 'chats.user_id');
+            }])
+            ->orderBy('updated_at', 'desc')
+            ->get();
+        
+        $chats->each(function ($chat) {
+            $chat->user->makeHidden(['id']);
+        });
+        if ($chats->isEmpty()) {
+            return response()->json([
+                'status' => false,
+                'message' => 'No chats found',
+            ], 404);
+        }
         return response()->json([
-            'status' => false,
-            'message' => 'No chats found',
-        ], 404);
+            'status' => true,
+            'chats' => $chats
+        ]);
     }
-
-    return response()->json([
-        'status' => true,
-        'chats' => $chats
-    ]);
-}
-
 }

@@ -13,7 +13,7 @@ use App\Models\Plan;
 
 class WithdrawController extends Controller
 {
-     public function handleWithdraw(Request $request)
+    public function handleWithdraw(Request $request)
     {
         switch ($request->method()) {
             case 'GET':
@@ -24,7 +24,7 @@ class WithdrawController extends Controller
                 return response()->json(['status' => false, 'message' => 'Invalid request method'], 405);
         }
     }
-    
+
     public function getWithdraws(Request $request)
     {
         if (!Auth::guard('sanctum')->check()) {
@@ -35,10 +35,10 @@ class WithdrawController extends Controller
         }
         $user = Auth::guard('sanctum')->user();
         $withdraws = Withdraw::with('currency:id,name')
-            ->where('user_id', $user->id)->get(); 
+            ->where('user_id', $user->id)->get();
         $withdraws->each(function ($withdraw) {
-                    $withdraw->currency->makeHidden(['id']);
-            });
+            $withdraw->currency->makeHidden(['id']);
+        });
         return response()->json([
             'status' => true,
             'withdraws' => $withdraws,
@@ -52,7 +52,7 @@ class WithdrawController extends Controller
             ['from', 1]
         ])->get()->map(function ($rate) {
             return [
-                'selling' => $rate->selling,
+                'price' => $rate->price,
                 'updated_at' => $rate->updated_at,
                 'currency_name' => $rate->toCurrency->name,
                 'to' => $rate->toCurrency->id,
@@ -60,9 +60,9 @@ class WithdrawController extends Controller
         });
         $total_withdrawals =  Withdraw::where('user_id', $user->id)->sum('amount');
         return response()->json([
-                'status' => true, 
-                'total_withdrawals' => $total_withdrawals, 
-                'from_binance_rates' => $from_binance_rates,  
+            'status' => true,
+            'total_withdrawals' => $total_withdrawals,
+            'from_binance_rates' => $from_binance_rates,
         ]);
     }
     public function store(Request $request)
@@ -74,14 +74,14 @@ class WithdrawController extends Controller
                 'error' => __('User not found')
             ], 404);
         }
-    
+
         if ($request->amount > $user->balance) {
             return response()->json([
                 'status' => false,
                 'error' => __("You don't have enough balance")
             ], 400);
         }
-    
+
         try {
             Withdraw::create([
                 'user_id' => $user->id,

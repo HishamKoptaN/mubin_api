@@ -17,7 +17,7 @@ class SupportChatController extends Controller
     {
         switch ($request->method()) {
             case 'GET':
-                return $this->getChatMessages($request);
+                return $this->getMessages($request);
             case 'POST':
                 return $this->sendMessage($request);
             case 'PUT':
@@ -26,48 +26,39 @@ class SupportChatController extends Controller
                 return response()->json(['status' => false, 'message' => 'Invalid request method'], 405);
         }
     }
-
- public function getChatMessages(Request $request)
-{
-    try {
-        $user = Auth::guard('sanctum')->user();
-        if (!$user) {
+    public function getMessages(Request $request)
+    {
+        try {
+            $user = Auth::guard('sanctum')->user();
+            if (!$user) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'User not authenticated',
+                ], 401);
+            }
+            $chat = Chat::where('user_id', $user->id)->firstOrCreate([
+                'admin_id' => User::where('id', 3)->first()->id ?? null,
+                'user_id' => $user->id
+            ]);
+            $messages = Message::where('chat_id', $chat->id)->orderBy('created_at', 'desc')->get();
+            foreach ($messages as $message) {
+                if (is_null($message->readed_at) && $message->user_id != $user->id) {
+                    $message->readed_at = now();
+                    $message->save();
+                }
+            }
+            return response()->json([
+                'status' => true,
+                'messages' => $messages,
+            ], 200);
+    
+        } catch (\Exception $e) {
             return response()->json([
                 'status' => false,
-                'message' => 'User not authenticated',
-            ], 401);
+                'error' => $e->getMessage(),
+            ], 500);
         }
-
-        // البحث عن المحادثة أو إنشاؤها إذا لم تكن موجودة
-        $chat = Chat::where('user_id', $user->id)->firstOrCreate([
-            'admin_id' => User::where('id', 3)->first()->id ?? null,
-            'user_id' => $user->id
-        ]);
-
-        // جلب الرسائل التي تخص المحادثة
-        $messages = Message::where('chat_id', $chat->id)->get();
-
-        // تحديث حقل readed_at لكل رسالة لم يتم قراءتها
-        foreach ($messages as $message) {
-            if (is_null($message->readed_at)) {
-                $message->readed_at = now();  // إضافة التوقيت الحالي
-                $message->save();  // حفظ التحديث في قاعدة البيانات
-            }
-        }
-
-        return response()->json([
-            'status' => true,
-            'messages' => $messages,
-        ], 200);
-
-    } catch (\Exception $e) {
-        return response()->json([
-            'status' => false,
-            'error' => $e->getMessage(),
-        ], 500);
     }
-}
-
     public function sendMessage(Request $request)
     {
         $user = Auth::guard('sanctum')->user();
@@ -94,7 +85,7 @@ class SupportChatController extends Controller
                 }
                 $file->move($destinationPath, $name);
                 Message::create([
-                    'message' =>  "https://api.aquan.website/api/show/image/chat_files/$name",
+                    'message' =>  "https://aquan.aquan.website/api/show/image/chat_files/$name",
                     'user_id' => $user->id,
                     'chat_id' => $chat->id,
                     'is_file' => 'yes',
@@ -123,8 +114,8 @@ class SupportChatController extends Controller
                 'chat_id' => $chat->id,
             ]);
         }
+        $chat->touch();
         $chat->load('messages');
-    
         return response()->json([
             'status' => true,
             'messages' => $chat->messages,
