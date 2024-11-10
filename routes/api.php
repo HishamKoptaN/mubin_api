@@ -52,7 +52,6 @@ use App\Http\Controllers\Api\ReferalsController;
 use App\Http\Controllers\Api\ProfileController;
 use App\Http\Controllers\Api\WithdrawsDepositsController;
 
-
 //--------------------Dashboard--------------------//
 use App\Http\Controllers\Dashboard\MainDashboardController;
 use App\Http\Controllers\Dashboard\InvoiceController;
