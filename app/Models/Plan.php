@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
 class Plan extends Model
 {
@@ -29,6 +30,15 @@ class Plan extends Model
 
     public function users()
     {
-    return $this->hasMany(UserPlan::class);
+        return $this->hasMany(UserPlan::class);
+    }
+    public function findOnlineEmployee()
+    {
+        return DB::table('user_has_roles')
+            ->join('users', 'user_has_roles.user_id', '=', 'users.id')
+            ->where('user_has_roles.role_id', 3)
+            ->where('users.online_offline', 'online')
+            ->select('users.*')
+            ->first();
     }
 }

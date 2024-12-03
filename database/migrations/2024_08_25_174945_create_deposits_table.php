@@ -11,8 +11,10 @@ return new class extends Migration
     {
         Schema::create('deposits', function (Blueprint $table) {
             $table->id();
-            $table->string('status')->default('pending');
-            $table->foreignId('user_id')->constrained('users')->cascadeOnDelete(); 
+            $table->string('status')->default('pending')->comment(
+                'pending-accepted-rejected',
+            );
+            $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
             $table->foreignId('employee_id')->default('1')->constrained('users')->cascadeOnDelete();
             $table->unsignedDouble('amount');
             $table->foreignId('method')->constrained('currencies')->cascadeOnDelete();

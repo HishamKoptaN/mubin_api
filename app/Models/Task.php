@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -16,6 +17,13 @@ class Task extends Model
         'link',
         'image',
     ];
+    protected $casts = [
+        'amount' => 'integer',
+    ];
+    public function getStatusAttribute($value)
+    {
+        return (bool) $value; // تحويل القيمة إلى boolean
+    }
     public function users()
     {
         return $this->belongsToMany(User::class, 'user_tasks');

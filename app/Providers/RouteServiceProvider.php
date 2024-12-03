@@ -10,31 +10,81 @@ use Illuminate\Support\Facades\Route;
 
 class RouteServiceProvider extends ServiceProvider
 {
-    /**
-     * The path to your application's "home" route.
-     *
-     * Typically, users are redirected here after authentication.
-     *
-     * @var string
-     */
-    public const HOME = '/admin/users';
-
-    /**
-     * Define your route model bindings, pattern filters, and other route configuration.
-     */
-    public function boot(): void
+    protected $namespace = 'App\Http\Controllers';
+    public function boot()
     {
-        RateLimiter::for('api', function (Request $request) {
-            return Limit::perMinute(60)->by($request->user()?->id ?: $request->ip());
-        });
+        parent::boot();
+        RateLimiter::for(
+            'api',
+            function (Request $request) {
+                return Limit::perMinute(120)->by(
+                    $request->user()?->id ?: $request->ip(),
+                );
+            },
+        );
+    }
+    public function map()
+    {
+        $this->mapArtisanRoutes();
+        $this->mapAuthApiRoutes();
+        $this->mapAppApiRoutes();
+        $this->mapDashApiRoutes();
+        $this->mapWebRoutes();
+    }
+    protected function mapArtisanRoutes()
+    {
 
-        $this->routes(function () {
-            Route::middleware('api')
-                ->prefix('api')
-                ->group(base_path('routes/api.php'));
+        Route::prefix('artisan')
+            ->middleware('api')
+            ->namespace($this->namespace)
+            ->group(
+                base_path(
+                    'routes/artisan.php',
+                ),
+            );
+    }
+    protected function mapAuthApiRoutes()
+    {
+        Route::prefix('auth')
+            ->middleware('api')
+            ->namespace($this->namespace)
+            ->group(
+                base_path(
+                    'routes/auth.php',
+                ),
+            );
+    }
+    protected function mapAppApiRoutes()
+    {
+        Route::prefix('app')
+            ->middleware('api')
+            ->namespace($this->namespace)
+            ->group(
+                base_path(
+                    'routes/app.php'
+                ),
+            );
+    }
 
-            Route::middleware('web')
-                ->group(base_path('routes/web.php'));
-        });
+    protected function mapDashApiRoutes()
+    {
+        Route::prefix('dash')
+            ->middleware('api')
+            ->namespace($this->namespace)
+            ->group(
+                base_path(
+                    'routes/dash.php',
+                ),
+            );
+    }
+    protected function mapWebRoutes()
+    {
+        Route::middleware('web')
+            ->namespace($this->namespace)
+            ->group(
+                base_path(
+                    'routes/web.php',
+                ),
+            );
     }
 }

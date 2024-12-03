@@ -13,9 +13,9 @@ return new class extends Migration
     {
         Schema::create('controllers', function (Blueprint $table) {
             $table->id();
-            $table->string('branch_branch');
-             $table->string('message');
             $table->boolean('status')->default(true)->comment('true-false');
+            $table->string('branch_branch');
+            $table->string('message');
             $table->timestamps();
         },);
     }

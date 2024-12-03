@@ -10,7 +10,7 @@ use App\Models\Plan;
 class CurrencySeeder extends Seeder
 {
     public function run()
-    {  
+    {
         $methods =  [
             [
                 "name" => "Binance",
@@ -34,12 +34,14 @@ class CurrencySeeder extends Seeder
             ],
         ];
         foreach ($methods as $method) {
-            Currency::create([
-                'status' => 'active',
-                'name' => $method['name'],
-                'name_code' => $method['code'],
-                'comment' => "This is comment"
-            ]);
+            Currency::create(
+                [
+                    'status' => true,
+                    'name' => $method['name'],
+                    'name_code' => $method['code'],
+                    'comment' => "This is comment"
+                ],
+            );
         }
     }
 }

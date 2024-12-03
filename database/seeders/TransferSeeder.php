@@ -1,4 +1,5 @@
 <?php
+
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
@@ -16,32 +17,34 @@ class TransferSeeder extends Seeder
             $this->command->info('Required users or currencies not found, seeder not executed.');
             return;
         }
-        $image =  ['invoice1.png','invoice2.png','invoice3.png'];
+        $image =  ['invoice1.png', 'invoice2.png', 'invoice3.png'];
         for ($i = 0; $i < 10; $i++) {
             $amount = $this->getRandomAmount();
             $rate = $this->getRandomRate();
             $netAmount = $amount - ($amount * $rate / 100);
 
-            Transfer::create([
-                'status' => $this->getRandomStatus(),
-                'amount' => $amount,
-                'net_amount' => $netAmount,
-                'rate' => $rate,
-                'message' => $this->getRandomMessage(),
-                'employee_id' => $this->getRandomUserId($userIds),
-                'user_id' => $this->getRandomUserId($userIds),
-                'sender_currency_id' => $this->getRandomCurrencyId($senderCurrencyIds),
-                'receiver_currency_id' => $this->getRandomCurrencyId($senderCurrencyIds),
-                'receiver_account' => 2411111,
-                'image' => "https://aquan.aquan.website/api/show/image/transfers/" . $image[array_rand($image)],
-                'address' => $this->getRandomAddress(),
-            ]);
+            Transfer::create(
+                [
+                    'status' => $this->getRandomStatus(),
+                    'amount' => $amount,
+                    'net_amount' => $netAmount,
+                    'rate' => $rate,
+                    'message' => $this->getRandomMessage(),
+                    'employee_id' => $this->getRandomUserId($userIds),
+                    'user_id' => $this->getRandomUserId($userIds),
+                    'sender_currency_id' => $this->getRandomCurrencyId($senderCurrencyIds),
+                    'receiver_currency_id' => $this->getRandomCurrencyId($senderCurrencyIds),
+                    'receiver_account' => 2411111,
+                    'image' => "https://api.aquan.website/public/storage/transfers/" . $image[array_rand($image)],
+                    'address' => $this->getRandomAddress(),
+                ],
+            );
         }
     }
 
     private function getRandomStatus()
     {
-        $statuses = ['completed', 'pending', 'rejected'];
+        $statuses = ['accepted', 'rejected', 'pending'];
         return $statuses[array_rand($statuses)];
     }
 
@@ -52,7 +55,7 @@ class TransferSeeder extends Seeder
 
     private function getRandomRate()
     {
-        return rand(1, 5); // Random percentage between 1% and 5%
+        return rand(1, 5);
     }
 
     private function getRandomMessage()

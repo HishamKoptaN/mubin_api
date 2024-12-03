@@ -5,9 +5,9 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
-{ 
+{
     public function up(): void
-    {    
+    {
         Schema::create('roles', function (Blueprint $table) {
             $table->id();
             $table->string('name')->unique();
@@ -20,7 +20,7 @@ return new class extends Migration
         });
         Schema::create('users', function (Blueprint $table) {
             $table->id();
-            $table->string('status')->default('active')->comment('active - inactive');
+            $table->boolean('status')->default(true)->comment('true-false');
             $table->string('account_number')->unique();
             $table->string('online_offline')->default('online')->comment('online - offline');
             $table->string('token')->unique();
@@ -46,24 +46,24 @@ return new class extends Migration
             $table->rememberToken();
             $table->timestamps();
         });
-        
-           Schema::create('user_has_permissions', function (Blueprint $table) {
+
+        Schema::create('user_has_permissions', function (Blueprint $table) {
             $table->id();
             $table->foreignId('permission_id')->constrained('permissions')->onDelete('cascade');
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
             $table->unique(['user_id', 'permission_id']);
         });
 
-          Schema::create('user_has_roles', function (Blueprint $table) {
-        $table->id();
-        $table->foreignId('role_id')->constrained('roles')->onDelete('cascade');
-        $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
-        $table->unique(['user_id', 'role_id']);
+        Schema::create('user_has_roles', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('role_id')->constrained('roles')->onDelete('cascade');
+            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
+            $table->unique(['user_id', 'role_id']);
         });
     }
 
     public function down(): void
-    {       
+    {
         Schema::dropIfExists('roles');
         Schema::dropIfExists('permissions');
         Schema::dropIfExists('users');

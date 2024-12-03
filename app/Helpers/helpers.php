@@ -1,41 +1,23 @@
 <?php
+if (!function_exists('uploadImage')) {
+    /**
+     * To upload image to the specified directory and return the image URL.
+     *
+     * @param \Illuminate\Http\UploadedFile $image
+     * @param string $directory
+     * @return string
+     */
+    function uploadImage(
+        $image,
+        $directory,
+    ) {
+        // تحقق من امتداد الصورة
+        $imageName = time() . '.' . $image->getClientOriginalExtension();
 
-use App\Models\Setting;
-use App\Models\User;
-use Illuminate\Support\Facades\Storage;
-use Inertia\Inertia;
+        // تحميل الصورة إلى المجلد المحدد
+        $image->move(public_path('storage/' . $directory), $imageName);
 
-function irender($component, $props = [])
-{
-    return Inertia::render($component, $props);
-}
-
-function getSetting($name, $default = null)
-{
-    $setting = Setting::where('name', $name)->first();
-
-    if ($setting)
-        return $setting->content;
-
-    return $default;
-}
-
-function storage_url($path)
-{
-    return Storage::url($path);
-}
-
-function storage_exists($path)
-{
-    return Storage::fileExists('public/' . $path);
-}
-
-function user(): User
-{
-    return auth()->user();
-}
-
-function id()
-{
-    return user()->id;
+        // إعادة رابط الصورة
+        return asset('public/' . 'storage/' . $directory . '/' . $imageName);
+    }
 }

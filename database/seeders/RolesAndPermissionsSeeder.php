@@ -22,14 +22,14 @@ class RolesAndPermissionsSeeder extends Seeder
             'Support',
             'DailyRates',
             'Controller',
-            'Accounts',  
+            'Accounts',
             'Plans',
         ];
         foreach ($permissions as $permission) {
             Permission::create(['name' => $permission]);
         }
         $roles = [
-            'manager' ,
+            'manager',
             'admin',
             'plansAdmin',
             'employee',

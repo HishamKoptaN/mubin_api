@@ -10,6 +10,7 @@ use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
 class User extends Authenticatable implements JWTSubject
 {
@@ -41,8 +42,14 @@ class User extends Authenticatable implements JWTSubject
         'plan_id',
         'role'
     ];
-
- 
+    public function getStatusAttribute($value)
+    {
+        return (bool) $value; // تحويل القيمة إلى boolean
+    }
+    public function notifications()
+    {
+        return $this->belongsToMany(Notification::class, 'notification_user');
+    }
     public function accounts()
     {
         return $this->hasMany(Account::class);
@@ -56,17 +63,17 @@ class User extends Authenticatable implements JWTSubject
     {
         return $this->belongsTo(Plan::class);
     }
-   
+
     public function createdDate(): Attribute
     {
         return Attribute::make(
-            get: fn (mixed $value) => $this->created_at ? $this->created_at->format('Y-m-d') : null,
+            get: fn(mixed $value) => $this->created_at ? $this->created_at->format('Y-m-d') : null,
         );
     }
     public function upgradedDate(): Attribute
     {
         return Attribute::make(
-            get: fn (mixed $value) => $this->upgraded_at ? $this->upgraded_at->format('Y-m-d H:i') : null,
+            get: fn(mixed $value) => $this->upgraded_at ? $this->upgraded_at->format('Y-m-d H:i') : null,
         );
     }
     public function refer()
@@ -77,7 +84,7 @@ class User extends Authenticatable implements JWTSubject
     {
         return $this->hasMany(User::class, 'refered_by');
     }
-  
+
     public function transfers()
     {
         return $this->hasMany(Transfer::class, 'user_id');
@@ -102,5 +109,14 @@ class User extends Authenticatable implements JWTSubject
     public function getJWTCustomClaims()
     {
         return [];
+    }
+    public static function findOnlineEmployee()
+    {
+        return DB::table('user_has_roles')
+            ->join('users', 'user_has_roles.user_id', '=', 'users.id')
+            ->where('user_has_roles.role_id', 3)
+            ->where('users.online_offline', 'online')
+            ->select('users.*')
+            ->first();
     }
 }

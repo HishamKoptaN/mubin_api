@@ -10,11 +10,13 @@ return new class extends Migration
     {
         Schema::create('withdraws', function (Blueprint $table) {
             $table->id();
-            $table->string('status')->default('pending');
-            $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();  
+            $table->string('status')->default('pending')->comment(
+                'pending-accepted-rejected',
+            );
+            $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
             $table->foreignId('method')->constrained('currencies')->cascadeOnDelete();
             $table->string('receiving_account_number');
-            $table->unsignedDouble('amount');           
+            $table->unsignedDouble('amount');
             $table->string('image')->default('Null');
             $table->string('comment')->default('Null');
             $table->timestamps();

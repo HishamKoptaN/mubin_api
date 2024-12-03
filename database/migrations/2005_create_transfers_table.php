@@ -9,36 +9,41 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('transfers', function (Blueprint $table) {
-            $table->id();
-            $table->string("status")->default('pending')->comment('pending - completed - rejected');
-            $table->unsignedDouble('amount');
-            $table->unsignedDouble('net_amount');
-            $table->unsignedDouble('rate');
-            $table->text("message")->default('null');
-            $table->string("image")->default('null');
-            $table->string("address")->default('null');
-            $table->foreignId('employee_id')
-                ->nullable()
-                ->constrained('users')
-                ->cascadeOnDelete()
-                ->cascadeOnUpdate();
+        Schema::create(
+            'transfers',
+            function (Blueprint $table) {
+                $table->id();
+                $table->string("status")->default('pending')->comment(
+                    'pending-accepted-rejected',
+                );
+                $table->unsignedDouble('amount');
+                $table->unsignedDouble('net_amount');
+                $table->unsignedDouble('rate');
+                $table->text("message")->default('null');
+                $table->string("image")->default('null');
+                $table->string("address")->default('null');
+                $table->foreignId('employee_id')
+                    ->nullable()
+                    ->constrained('users')
+                    ->cascadeOnDelete()
+                    ->cascadeOnUpdate();
 
-            $table->foreignId('user_id')
-                ->constrained('users')
-                ->cascadeOnDelete()
-                ->cascadeOnUpdate();
-            $table->foreignId('sender_currency_id')
-                ->constrained('currencies')
-                ->cascadeOnDelete()
-                ->cascadeOnUpdate();
-            $table->foreignId('receiver_currency_id')
-                ->constrained('currencies')
-                ->cascadeOnDelete()
-                ->cascadeOnUpdate();
-            $table->string("receiver_account");
-            $table->timestamps();
-        });
+                $table->foreignId('user_id')
+                    ->constrained('users')
+                    ->cascadeOnDelete()
+                    ->cascadeOnUpdate();
+                $table->foreignId('sender_currency_id')
+                    ->constrained('currencies')
+                    ->cascadeOnDelete()
+                    ->cascadeOnUpdate();
+                $table->foreignId('receiver_currency_id')
+                    ->constrained('currencies')
+                    ->cascadeOnDelete()
+                    ->cascadeOnUpdate();
+                $table->string("receiver_account");
+                $table->timestamps();
+            },
+        );
     }
 
     public function down(): void

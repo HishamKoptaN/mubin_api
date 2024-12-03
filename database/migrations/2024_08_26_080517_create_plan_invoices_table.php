@@ -8,17 +8,22 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('plan_invoices', function (Blueprint $table) {
-            $table->id();
-            $table->string('status')->default('pending');
-            $table->string('image')->default('Null');
-            $table->foreignId('plan_invoice_id')->nullable()->constrained('plans')->nullOnDelete();
-            $table->unsignedDouble('amount');
-            $table->string('comment')->default('Null');
-            $table->string("method")->default('Null');
-            $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
-            $table->timestamps();
-        });
+        Schema::create(
+            'plan_invoices',
+            function (Blueprint $table) {
+                $table->id();
+                $table->string('status')->default('pending')->comment(
+                    'pending-accepted-rejected',
+                );
+                $table->string('image')->default('Null');
+                $table->foreignId('plan_invoice_id')->nullable()->constrained('plans')->nullOnDelete();
+                $table->unsignedDouble('amount');
+                $table->string('comment')->default('Null');
+                $table->string("method")->default('Null');
+                $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
+                $table->timestamps();
+            },
+        );
     }
     public function down(): void
     {

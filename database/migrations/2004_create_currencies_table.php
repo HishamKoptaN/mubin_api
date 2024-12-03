@@ -10,7 +10,7 @@ return new class extends Migration
     {
         Schema::create('currencies', function (Blueprint $table) {
             $table->id();
-            $table->string('status')->default('active')->comment('active - inactive');
+            $table->boolean('status')->default(true)->comment('true-false');
             $table->string('name');
             $table->string('name_code');
             $table->text('comment');
