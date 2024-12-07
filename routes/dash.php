@@ -10,7 +10,6 @@ use App\Http\Controllers\Dash\TasksDashController;
 use App\Http\Controllers\Dash\MainDashController;
 use App\Http\Controllers\Dash\TransfersDashController;
 use App\Http\Controllers\Dash\SupportDashController;
-use App\Http\Controllers\Dash\MessagesDashController;
 use App\Http\Controllers\Dash\RatesDashController;
 use App\Http\Controllers\Dash\AppControllerDashController;
 use App\Http\Controllers\Dash\NotificationsDashController;

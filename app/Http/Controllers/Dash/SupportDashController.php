@@ -4,10 +4,7 @@ namespace App\Http\Controllers\Dash;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Carbon\Carbon;
-use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\File;
 use App\Models\Chat;
 use App\Models\Message;
 
@@ -21,9 +18,14 @@ class SupportDashController extends Controller
         switch ($request->method()) {
             case 'GET':
                 if (!$id) {
-                    return $this->getChats($request);
+                    return $this->getChats(
+                        $request,
+                    );
                 } else {
-                    return $this->getMsgs($request, $id);
+                    return $this->getMsgs(
+                        $request,
+                        $id,
+                    );
                 }
             case 'POST':
                 return $this->sendMsg(
