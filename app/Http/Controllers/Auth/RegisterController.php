@@ -42,7 +42,6 @@ class RegisterController extends Controller
                     'message' => rand(11111, 99999),
                     'refcode' => strtoupper(str()->random(6)),
                     'refered_by' => $ref ? $ref->id : null,
-                    'plan_id' => 1
                 ],
             );
             if ($user) {

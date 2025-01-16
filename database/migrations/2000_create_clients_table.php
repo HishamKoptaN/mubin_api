@@ -9,18 +9,20 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create(
-            'password_reset_tokens',
+            'clients',
             function (Blueprint $table) {
-                $table->string('email')->primary();
-                $table->string('token');
-                $table->timestamp('created_at')->nullable();
+                $table->id();
+                $table->timestamps();
+                $table->string(
+                    "name",
+                );
             },
         );
     }
     public function down(): void
     {
         Schema::dropIfExists(
-            'password_reset_tokens',
+            'clients',
         );
     }
 };

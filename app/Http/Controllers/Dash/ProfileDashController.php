@@ -9,7 +9,7 @@ use App\Models\User;
 
 class ProfileDashController extends Controller
 {
-     public function handleProfile(Request $request)
+    public function handleProfile(Request $request)
     {
         switch ($request->method()) {
             case 'GET':
@@ -26,8 +26,9 @@ class ProfileDashController extends Controller
                 return response()->json(['status' => false, 'message' => 'Invalid request method']);
         }
     }
-    public function getStatus(Request $request)
-    {
+    public function getStatus(
+        Request $request,
+    ) {
         $user = Auth::guard('sanctum')->user();
         if (!$user) {
             return response()->json([
@@ -42,8 +43,9 @@ class ProfileDashController extends Controller
             'user_status' => $user_status,
         ], 200);
     }
-    public function updateStatus(Request $request)
-    {
+    public function updateStatus(
+        Request $request,
+    ) {
         $user = Auth::guard('sanctum')->user();
         if (!$user) {
             return response()->json([
@@ -53,9 +55,11 @@ class ProfileDashController extends Controller
         $currentStatus = $user->online_offline;
         $user->online_offline = $currentStatus === 'online' ? 'offline' : 'online';
         $user->save();
-        return response()->json([
-            'status' => true,
-            'new_status' => $user->online_offline,
-        ]);
+        return response()->json(
+            [
+                'status' => true,
+                'new_status' => $user->online_offline,
+            ],
+        );
     }
 }

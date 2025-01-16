@@ -3,13 +3,18 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Spatie\Permission\Models\Role as SpatieRole;
+use Illuminate\Database\Eloquent\Model;
 
-class Role extends  SpatieRole
+class Client extends Model
 {
     use HasFactory;
+
     protected $fillable = [
-        'id',
         'name',
     ];
+
+    public function orders()
+    {
+        return $this->hasMany(Order::class);
+    }
 }

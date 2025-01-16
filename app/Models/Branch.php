@@ -2,12 +2,13 @@
 
 namespace App\Models;
 
-use Spatie\Permission\Models\Permission as SpatiePermission;
-
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Permission extends Model
+class Branch extends Model
 {
+    use HasFactory;
+
     protected $fillable = [
         'name',
     ];

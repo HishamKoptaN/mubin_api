@@ -15,7 +15,7 @@ class MainDashController extends Controller
     public function handleMain(Request $request)
     {
         switch ($request->method()) {
-              case 'GET':
+            case 'GET':
                 return $this->getUserPermissions($request);
             case 'POST':
                 return $this->uploadFile($request);
@@ -36,10 +36,12 @@ class MainDashController extends Controller
                 ->join('permissions', 'user_has_permissions.permission_id', '=', 'permissions.id')
                 ->where('user_has_permissions.user_id', $user->id)
                 ->pluck('permissions.name');
-            return response()->json([
-                'status' => true,
-                'permissions' => $permissions
-            ]);
+            return response()->json(
+                [
+                    'status' => true,
+                    'permissions' => $permissions
+                ],
+            );
         }
         return response()->json(['message' => 'User not found'], 404);
     }

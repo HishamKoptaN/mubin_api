@@ -29,6 +29,7 @@ class RouteServiceProvider extends ServiceProvider
         $this->mapAuthApiRoutes();
         $this->mapAppApiRoutes();
         $this->mapDashApiRoutes();
+        $this->mapWebsiteRoutes();
         $this->mapWebRoutes();
     }
     protected function mapArtisanRoutes()
@@ -58,7 +59,9 @@ class RouteServiceProvider extends ServiceProvider
     {
         Route::prefix('app')
             ->middleware('api')
-            ->namespace($this->namespace)
+            ->namespace(
+                $this->namespace,
+            )
             ->group(
                 base_path(
                     'routes/app.php'
@@ -66,21 +69,38 @@ class RouteServiceProvider extends ServiceProvider
             );
     }
 
-    protected function mapDashApiRoutes()
+    protected function mapWebsiteRoutes()
     {
         Route::prefix('dash')
             ->middleware('api')
-            ->namespace($this->namespace)
+            ->namespace(
+                $this->namespace,
+            )
             ->group(
                 base_path(
                     'routes/dash.php',
                 ),
             );
     }
+    protected function mapDashApiRoutes()
+    {
+        Route::prefix('website')
+            ->middleware('api')
+            ->namespace(
+                $this->namespace,
+            )
+            ->group(
+                base_path(
+                    'routes/website.php',
+                ),
+            );
+    }
     protected function mapWebRoutes()
     {
         Route::middleware('web')
-            ->namespace($this->namespace)
+            ->namespace(
+                $this->namespace,
+            )
             ->group(
                 base_path(
                     'routes/web.php',

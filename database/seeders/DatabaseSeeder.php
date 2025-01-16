@@ -13,25 +13,13 @@ class DatabaseSeeder extends Seeder
     {
         $this->call(
             [
-                RolesAndPermissionsSeeder::class,
-                PlanSeeder::class,
-                UserSeeder::class,
                 PermissionsSeeder::class,
-                CurrencySeeder::class,
-                AccountsSeeder::class,
-                TransferSeeder::class,
-                SettingSeeder::class,
-                ControllerSeeder::class,
-                TasksSeeder::class,
-                UserTasksSeeder::class,
-                ChatSeeder::class,
-                MessagesSeeder::class,
-                RatesSeeder::class,
-                PlansInvoicesSeeder::class,
-                WithdrawsSeeder::class,
-                DepositsSeeder::class,
-                NotificationsSeeder::class,
-
+                UsersSeeder::class,
+                ClientsSeeder::class,
+                BranchsSeeder::class,
+                OrdersSeeder::class,
+                RolesSeeder::class,
+                RoleUserSeeder::class,
             ],
         );
     }

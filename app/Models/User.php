@@ -42,14 +42,22 @@ class User extends Authenticatable implements JWTSubject
         'plan_id',
         'role'
     ];
+    public function roles()
+    {
+        return $this->belongsToMany(
+            Role::class,
+        );
+    }
+
+    public function notifications()
+    {
+        return $this->belongsToMany(Notification::class, 'notification_user', 'user_id', 'notification_id');
+    }
     public function getStatusAttribute($value)
     {
         return (bool) $value; // تحويل القيمة إلى boolean
     }
-    public function notifications()
-    {
-        return $this->belongsToMany(Notification::class, 'notification_user');
-    }
+
     public function accounts()
     {
         return $this->hasMany(Account::class);
@@ -112,9 +120,9 @@ class User extends Authenticatable implements JWTSubject
     }
     public static function findOnlineEmployee()
     {
-        return DB::table('user_has_roles')
-            ->join('users', 'user_has_roles.user_id', '=', 'users.id')
-            ->where('user_has_roles.role_id', 3)
+        return DB::table('role_user')
+            ->join('users', 'role_user.user_id', '=', 'users.id')
+            ->where('role_user.role_id', 3)
             ->where('users.online_offline', 'online')
             ->select('users.*')
             ->first();
