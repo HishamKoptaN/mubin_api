@@ -6,7 +6,6 @@ use App\Http\Controllers\Dash\PermissionsDashController;
 use App\Http\Controllers\Dash\ProfileDashController;
 use App\Http\Controllers\Dash\OrdersDashController;
 
-
 Route::any(
     '/orders',
     [
@@ -14,7 +13,6 @@ Route::any(
         'handleOrders',
     ],
 );
-
 Route::any(
     '/roles/{id?}',
     [

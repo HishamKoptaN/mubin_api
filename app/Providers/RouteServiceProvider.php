@@ -68,7 +68,6 @@ class RouteServiceProvider extends ServiceProvider
                 ),
             );
     }
-
     protected function mapWebsiteRoutes()
     {
         Route::prefix('dash')
