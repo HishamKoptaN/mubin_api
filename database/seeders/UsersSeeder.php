@@ -3,84 +3,115 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
 use App\Models\User;
 
 class UsersSeeder extends Seeder
 {
     public function run()
     {
-        $image =  [
-            '1.png',
-            '2.png',
-            '3.png',
-        ];
         $users = [
+            // kenya
             [
+                'id' => 1,
                 'status' => true,
-                'online_offline' => 'online',
-                'first_name' => "manager",
-                'last_name' => "manager",
-                'password' => Hash::make("admin"),
-                'email' => "manager",
-                'image' =>  "https://m.aquan.website/public/storage/users/" . $image[array_rand($image)],
-                'address' => "managaer",
-                'phone' => "+2126000000",
+                'firebase_uid' => 'uPOcERkvb1fz4QXzn5YvVOTqhPl1',
+                'online_offline' => true,
+                'role' => 'kenya',
             ],
+            // tanzania
             [
+                'id' => 2,
                 'status' => true,
-                'online_offline' => 'online',
-                'first_name' => "Admin",
-                'last_name' => "Admin",
-                'password' => Hash::make("admin"),
-                'email' => "Admin",
-                'image' =>  "https://m.aquan.website/public/storage/users/" . $image[array_rand($image)],
-                'address' => "Admin",
-                'phone' => "+2126000002",
-            ],
-            [
-                'status' => true,
-                'online_offline' => 'online',
-                'first_name' => "Employee",
-                'last_name' => "Employee",
-                'password' => Hash::make("admin"),
-                'email' => "Employee",
-                'image' =>  "https://m.aquan.website/public/storage/users/" . $image[array_rand($image)],
-                'address' => "Employee",
-                'phone' => "+2126000003",
-            ],
-            [
-                'status' => true,
-                'online_offline' => 'online',
-                'first_name' => "User",
-                'last_name' => "User",
-                'password' => Hash::make("admin"),
-                'email' => "User",
-                'image' =>  "https://m.aquan.website/public/storage/users/" . $image[array_rand($image)],
-                'address' => "User",
-                'phone' => "+2126000006",
-            ],
-            [
-                'status' => true,
-                'online_offline' => 'online',
-                'first_name' => "User2",
-                'last_name' => "User2",
-                'password' => Hash::make("admin"),
-                'email' => "User2",
-                'image' =>   "https://m.aquan.website/public/storage/users/" . $image[array_rand($image)],
-                'address' => "Address User2",
-                'phone' => "+2126000007",
-            ],
-        ];
+                'firebase_uid' => 'kMQzV1gzLLeZerptZXsEfW1KW0e2',
+                'online_offline' => true,
+                'role' => 'tanzania',
 
-        foreach ($users as $user) {
-            User::updateOrCreate(
-                [
-                    'email' => $user['email'],
-                ],
-                $user
-            );
+            ],
+            // malawi
+            [
+                'id' => 3,
+                'online_offline' => true,
+                'status' => true,
+                'firebase_uid' => '4o3LIzBjniQZtOcgRFuajErAmiQ2',
+                'role' => 'malawi',
+            ],
+            // cameroun
+            [
+                'id' => 4,
+                'status' => true,
+                'firebase_uid' => 'TC8mWPWTKsfS5DlawAD0t8ahPbC3',
+                'online_offline' => true,
+                'role' => 'cameroun',
+            ],
+
+            // benin
+            [
+                'id' => 5,
+                'status' => true,
+                'firebase_uid' => '8pnr7PxXXNUJlgTmOqdlw9zaDNf2',
+                'online_offline' => true,
+                'role' => 'benin',
+            ],
+            // ghana
+            [
+                'id' => 6,
+                'status' => true,
+                'firebase_uid' => 'bjlGcMMZc7SAuRj0E18O6bY37My1',
+                'online_offline' => true,
+                'role' => 'ghana',
+            ],
+            // guinee
+            [
+                'id' => 7,
+                'status' => true,
+                'firebase_uid' => 'IuiMY3jC3RVH4g7TiGc6FcRiFZC3',
+                'online_offline' => true,
+                'role' => 'guinee',
+            ],
+            // uganda
+            [
+                'id' => 8,
+                'status' => true,
+                'firebase_uid' => 'UwlQ1tnR5ZWH8E9SWX0rpuTyxSr1',
+                'online_offline' => true,
+                'role' => 'uganda',
+            ],
+            // owner
+            [
+                'id' => 9,
+                'status' => true,
+                'firebase_uid' => 'YW8dYpn5HMYg0pwp3PI0KYwtt3r1',
+                'online_offline' => true,
+                'role' => 'owner',
+            ],
+            // manager
+            [
+                'id' => 10,
+                'status' => true,
+                'firebase_uid' => 'iU3hcT2aZfMyN5EGQAFNXRDXTf62',
+                'online_offline' => true,
+                'role' => 'manager',
+            ],
+            // admin
+            [
+                'id' => 11,
+                'status' => true,
+                'firebase_uid' => 'B1fLapJEyDgvQX9ehtraesSd2rJ3',
+                'online_offline' => true,
+                'role' => 'admin'
+            ],
+
+        ];
+        foreach ($users as $userData) {
+            $user = User::create([
+                'id' => $userData['id'],
+                'status' => true,
+                'firebase_uid' => $userData['firebase_uid'],
+                'online_offline' => true,
+            ],
+        );
+            $user->syncRoles([$userData['role']]);
+
         }
     }
 }

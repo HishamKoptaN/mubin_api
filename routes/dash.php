@@ -5,12 +5,20 @@ use App\Http\Controllers\Dash\RolesDashController;
 use App\Http\Controllers\Dash\PermissionsDashController;
 use App\Http\Controllers\Dash\ProfileDashController;
 use App\Http\Controllers\Dash\OrdersDashController;
+use App\Http\Controllers\Dash\ClientsDashController;
 
 Route::any(
-    '/orders',
+    '/clients',
+    [
+        ClientsDashController::class,
+        'handleReq',
+    ],
+);
+Route::get(
+    '/orders/{client_id?}',
     [
         OrdersDashController::class,
-        'handleOrders',
+        'getOrders',
     ],
 );
 Route::any(
@@ -30,6 +38,6 @@ Route::any(
 Route::get(
     '/test',
     function () {
-        return "test dash mubin";
+        return "test dash";
     },
 );

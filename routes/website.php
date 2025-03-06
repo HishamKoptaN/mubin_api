@@ -13,6 +13,6 @@ Route::get(
 Route::get(
     '/test',
     function () {
-        return "test dash mubin";
+        return "test website";
     },
 );

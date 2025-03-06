@@ -8,16 +8,15 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
-use Illuminate\Support\Facades\DB;
 
 class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable, HasRoles;
+    protected $guard_name = 'api';
     protected $fillable = [
         'status',
         'online_offline',
         'account_number',
-        'token',
         'name',
         'username',
         'password',
@@ -40,10 +39,23 @@ class User extends Authenticatable
         'plan_id',
         'role'
     ];
-    public function roles()
+     public function branches()
+    {
+        return $this->belongsToMany(Branch::class, 'branch_user');
+    }
+    public function role()
+    {
+        return $this->belongsTo(
+            Role::class,
+        );
+    }
+    public function userRoles()
     {
         return $this->belongsToMany(
             Role::class,
+            'role_users',
+            'user_id',
+            'role_id',
         );
     }
 
@@ -53,22 +65,9 @@ class User extends Authenticatable
     }
     public function getStatusAttribute($value)
     {
-        return (bool) $value; // تحويل القيمة إلى boolean
+        return (bool) $value;
     }
 
-    public function accounts()
-    {
-        return $this->hasMany(Account::class);
-    }
-    public function role()
-    {
-        return $this->belongsTo(Role::class);
-    }
-
-    public function plan()
-    {
-        return $this->belongsTo(Plan::class);
-    }
 
     public function createdDate(): Attribute
     {
@@ -90,23 +89,6 @@ class User extends Authenticatable
     {
         return $this->hasMany(User::class, 'refered_by');
     }
-
-    public function transfers()
-    {
-        return $this->hasMany(Transfer::class, 'user_id');
-    }
-    public function adminTransfers()
-    {
-        return $this->hasMany(Transfer::class, 'admin_id');
-    }
-    public function tasks()
-    {
-        return $this->belongsToMany(Task::class, 'user_tasks');
-    }
-    public function userPlan()
-    {
-        return $this->hasOne(UserPlan::class);
-    }
     public function getJWTIdentifier()
     {
         return $this->getKey();
@@ -115,14 +97,5 @@ class User extends Authenticatable
     public function getJWTCustomClaims()
     {
         return [];
-    }
-    public static function findOnlineEmployee()
-    {
-        return DB::table('role_user')
-            ->join('users', 'role_user.user_id', '=', 'users.id')
-            ->where('role_user.role_id', 3)
-            ->where('users.online_offline', 'online')
-            ->select('users.*')
-            ->first();
     }
 }

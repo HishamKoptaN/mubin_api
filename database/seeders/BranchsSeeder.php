@@ -19,7 +19,6 @@ class BranchsSeeder extends Seeder
         Branch::create([
             'name' => 'Tertiary Branch',
         ]);
-
         // إضافة الفروع الجديدة
         Branch::create([
             'name' => 'kinia',

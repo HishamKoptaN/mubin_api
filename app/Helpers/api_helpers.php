@@ -1,5 +1,5 @@
 <?php
-function successResponse($data = null, $code = 200)
+function successRes($data = null, $code = 200)
 {
     return response()->json(
         $data,
@@ -7,7 +7,7 @@ function successResponse($data = null, $code = 200)
     );
 }
 
-function failureResponse($errors = null, $status = 500)
+function failureRes($errors = null, $status = 500)
 {
     if (is_array($errors)) {
         $errors = implode(', ', $errors);

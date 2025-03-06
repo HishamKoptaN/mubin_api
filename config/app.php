@@ -20,9 +20,7 @@ return [
     ],
     'providers' => [
         Laravel\Sanctum\SanctumServiceProvider::class,
-        Laravel\Tinker\TinkerServiceProvider::class,
         Kreait\Laravel\Firebase\ServiceProvider::class,
-
         Illuminate\Auth\AuthServiceProvider::class,
         Illuminate\Broadcasting\BroadcastServiceProvider::class,
         Illuminate\Bus\BusServiceProvider::class,
@@ -53,6 +51,6 @@ return [
     ],
 
     'aliases' => Facade::defaultAliases()->merge([
-        // 'Example' => App\Facades\Example::class,
+        'Firebase' => Kreait\Laravel\Firebase\Facades\Firebase::class,
     ])->toArray(),
 ];

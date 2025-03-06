@@ -25,84 +25,60 @@ class RouteServiceProvider extends ServiceProvider
     }
     public function map()
     {
-        $this->mapArtisanRoutes();
-        $this->mapAuthApiRoutes();
-        $this->mapAppApiRoutes();
-        $this->mapDashApiRoutes();
-        $this->mapWebsiteRoutes();
+        $this->mapAuthRoutes();
+        $this->mapApiRoutes();
+        $this->mapDashRoutes();
         $this->mapWebRoutes();
+        $this->mapArtisanRoutes();
     }
-    protected function mapArtisanRoutes()
-    {
 
-        Route::prefix('artisan')
+    protected function mapAuthRoutes()
+    {
+        Route::middleware('api')
+            ->prefix('auth')
+            ->group(base_path('routes/auth.php'));
+    }
+    protected function mapApiRoutes()
+    {
+        Route::prefix('api')
             ->middleware('api')
             ->namespace($this->namespace)
             ->group(
                 base_path(
-                    'routes/artisan.php',
+                    'routes/api.php'
                 ),
             );
     }
-    protected function mapAuthApiRoutes()
-    {
-        Route::prefix('auth')
-            ->middleware('api')
-            ->namespace($this->namespace)
-            ->group(
-                base_path(
-                    'routes/auth.php',
-                ),
-            );
-    }
-    protected function mapAppApiRoutes()
-    {
-        Route::prefix('app')
-            ->middleware('api')
-            ->namespace(
-                $this->namespace,
-            )
-            ->group(
-                base_path(
-                    'routes/app.php'
-                ),
-            );
-    }
-    protected function mapWebsiteRoutes()
+
+    protected function mapDashRoutes()
     {
         Route::prefix('dash')
             ->middleware('api')
-            ->namespace(
-                $this->namespace,
-            )
+            ->namespace($this->namespace)
             ->group(
                 base_path(
                     'routes/dash.php',
                 ),
             );
     }
-    protected function mapDashApiRoutes()
-    {
-        Route::prefix('website')
-            ->middleware('api')
-            ->namespace(
-                $this->namespace,
-            )
-            ->group(
-                base_path(
-                    'routes/website.php',
-                ),
-            );
-    }
     protected function mapWebRoutes()
     {
         Route::middleware('web')
-            ->namespace(
-                $this->namespace,
-            )
+            ->namespace($this->namespace)
             ->group(
                 base_path(
                     'routes/web.php',
+                ),
+            );
+    }
+    protected function mapArtisanRoutes()
+    {
+        Route::prefix('artisan')
+            ->middleware('api')
+            ->namespace($this->namespace)
+            ->group(
+                base_path(
+                    'routes/artisan.php',
                 ),
             );
     }

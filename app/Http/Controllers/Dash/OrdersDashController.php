@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Dash;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Http\Resources\OrderResource;
 use App\Models\Order;
 
 class OrdersDashController extends Controller
@@ -23,15 +24,7 @@ class OrdersDashController extends Controller
                 return $this->uploadFile(
                     $request,
                 );
-            case 'PUT':
-                return $this->updateFile(
-                    $request,
-                );
-            case 'PATCH':
-                return $this->updateUser(
-                    $request,
-                    $request->id,
-                );
+
             case 'DELETE':
                 return $this->deleteFile(
                     $request,
@@ -43,15 +36,25 @@ class OrdersDashController extends Controller
 
     protected function getOrders(
         Request $request,
-        $branch_id,
     ) {
+        $client_id = $request->query(
+            'client_id',
+        );
+        if (!$client_id) {
+            return  failureRes(
+                'client_id مطلوب',
+            );
+        }
         $orders = Order::where(
-            'branch_id',
-            $branch_id,
-        )->get();
-        return response()->json([
-            'status' => true,
-            'orders' => $orders,
-        ], 200);
+            'client_id',
+            $client_id,
+        )->paginate(10);
+        return successRes(
+            paginateRes(
+                $orders,
+                OrderResource::class,
+                'orders',
+            )
+        );
     }
 }
