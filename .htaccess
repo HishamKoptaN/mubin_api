@@ -1,7 +1,6 @@
 <IfModule mod_headers.c>
     Header set Access-Control-Allow-Origin "*"
 </IfModule>
-
 <IfModule mod_rewrite.c>
     <IfModule mod_negotiation.c>
         Options -MultiViews -Indexes
@@ -9,8 +8,6 @@
     RewriteEngine On
     RewriteBase /
     # Allow access to storage
-    RewriteRule ^api/(.*)$ public/index.php?/$1 [L,QSA]
-    RewriteRule ^orders/(.*)$ /public/orders/$1 [L]
     RewriteRule ^storage/(.*)$ /public/storage/$1 [L]
     # Handle Authorization Header
     RewriteCond %{HTTP:Authorization} .
